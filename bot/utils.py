@@ -5,12 +5,14 @@ import os
 import time
 import json
 
+
 def get_start_kb() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="🌍 Мировые компании")
     kb.button(text="🇷🇺 Российские компании")
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
+
 
 def get_world_kb() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
@@ -19,9 +21,11 @@ def get_world_kb() -> ReplyKeyboardMarkup:
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
 
+
 def load_tickers():
     df = pd.read_csv("data/sp500.csv")
     return df['Ticker'].tolist()
+
 
 def load_from_cache():
     CACHE_FILE = 'data/cache.json'
@@ -32,6 +36,7 @@ def load_from_cache():
             if time.time() - data['timestamp'] < CACHE_EXPIRATION_TIME:
                 return data['result']
     return None
+
 
 def save_to_cache(result):
     CACHE_FILE = 'data/cache.json'

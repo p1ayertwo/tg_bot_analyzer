@@ -6,6 +6,7 @@ import matplotlib.dates as mdates
 from datetime import datetime, timedelta
 from bot.utils import load_tickers, load_from_cache, save_to_cache
 
+
 def generate_stock_price_chart(ticker, file_path):
     data = yf.download(ticker, period='1d', interval='1m')
 
@@ -29,6 +30,7 @@ def generate_stock_price_chart(ticker, file_path):
 
     return file_path
 
+
 def get_stock_info(ticker):
     result = []
     data = yf.download(ticker, period='2d', interval='1d', auto_adjust=True, progress=False)
@@ -45,12 +47,13 @@ def get_stock_info(ticker):
 
     return "\n".join(result)
 
+
 def get_top_movers(tickers):
     results = []
 
     for ticker in tickers:
         data = yf.download(ticker, period='2d', interval='1d', auto_adjust=True, progress=False)
-        
+
         if data.empty:
             print(f"Нет данных для {ticker}")
             continue
@@ -77,9 +80,10 @@ def get_top_movers(tickers):
 
     return top_gainers, top_losers
 
+
 def format_top_movers(gainers, losers):
     result = []
-    result.append(f"Лидеры роста:")
+    result.append("Лидеры роста:")
     result.append(" ")
 
     for index, row in gainers.iterrows():
@@ -90,7 +94,7 @@ def format_top_movers(gainers, losers):
             result.append(f"📈 +{row['Percent Change']:.2f}% ({row['Price Change']:.2f}$)")
         result.append(" ")
 
-    result.append(f"Лидеры снижения:")
+    result.append("Лидеры снижения:")
     result.append(" ")
 
     for index, row in losers.iterrows():
@@ -100,25 +104,29 @@ def format_top_movers(gainers, losers):
         else:
             result.append(f"📈 +{row['Percent Change']:.2f}% ({row['Price Change']:.2f}$)")
         result.append(" ")
-    
+
     return "\n".join(result)
+
 
 def get_and_format_top_movers():
     cached_result = load_from_cache()
     if cached_result is not None:
         return cached_result
-    
     tickers = load_tickers()
     top_gainers, top_losers = get_top_movers(tickers)
     result = format_top_movers(top_gainers, top_losers)
 
     save_to_cache(result)
-    
+
     return result
+
 
 def generate_stock_price_chart_ru(ticker, file_path):
     try:
-        data = moex.Ticker(ticker).candles(start=(datetime.now() - timedelta(days=1)), end=datetime.now())
+        data = moex.Ticker(ticker).candles(
+            start=(datetime.now() - timedelta(days=1)),
+            end=datetime.now()
+        )
 
         if data.empty:
             return None
@@ -139,13 +147,16 @@ def generate_stock_price_chart_ru(ticker, file_path):
         plt.close()
 
         return file_path
-    
     except LookupError:
         return None
 
+
 def get_stock_info_ru(ticker):
     result = []
-    data = moex.Ticker(ticker).candles(start=(datetime.now() - timedelta(days=1)), end=datetime.now())
+    data = moex.Ticker(ticker).candles(
+        start=(datetime.now() - timedelta(days=1)),
+        end=datetime.now()
+    )
     earliest_row = data.loc[data['end'].idxmin()]
     latest_row = data.loc[data['end'].idxmax()]
     open_price = earliest_row['open']
