@@ -5,3 +5,4 @@ yfinance==0.2.66
 matplotlib==3.10.7
 moexalgo==2.4.1
 flake8==7.3.0
+pytest==9.0.0

@@ -8,7 +8,11 @@ from bot.utils import load_tickers, load_from_cache, save_to_cache
 
 
 def generate_stock_price_chart(ticker, file_path):
-    data = yf.download(ticker, period='1d', interval='1m')
+    """
+    Генерирует дневной график по тикеру с Yahoo Finance
+    и сохраняет его в png формате по указанному пути
+    """
+    data = yf.download(ticker, period='1d', interval='1m', auto_adjust=True, progress=False)
 
     if data.empty:
         return None
@@ -32,6 +36,10 @@ def generate_stock_price_chart(ticker, file_path):
 
 
 def get_stock_info(ticker):
+    """
+    Возвращает строкой информацию о дневном изменении
+    по тикеру с Yahoo Finance
+    """
     result = []
     data = yf.download(ticker, period='2d', interval='1d', auto_adjust=True, progress=False)
     last_day_data = data.iloc[-1]
@@ -49,6 +57,11 @@ def get_stock_info(ticker):
 
 
 def get_top_movers(tickers):
+    """
+    Возвращает два DataFrame с информацией о лидерах роста и снижения за день
+    среди переданного массива тикеров с Yahoo Finance
+    Предполагается использование с готовым массивом участников индекса S&P 500
+    """
     results = []
 
     for ticker in tickers:
@@ -82,6 +95,10 @@ def get_top_movers(tickers):
 
 
 def format_top_movers(gainers, losers):
+    """
+    Используется совместно с get_top_movers
+    Превращает два полученных DataFrame в текст для отправки в чат
+    """
     result = []
     result.append("Лидеры роста:")
     result.append(" ")
@@ -109,6 +126,11 @@ def format_top_movers(gainers, losers):
 
 
 def get_and_format_top_movers():
+    """
+    Агрегирует get_top_movers и format_top_movers
+    Возвращает строкой информацию о лидерах роста и снижения за день
+    среди участников индекса S&P 500
+    """
     cached_result = load_from_cache()
     if cached_result is not None:
         return cached_result
@@ -122,6 +144,10 @@ def get_and_format_top_movers():
 
 
 def generate_stock_price_chart_ru(ticker, file_path):
+    """
+    Генерирует дневной график по тикеру с Московской Биржи
+    и сохраняет его в png формате по указанному пути
+    """
     try:
         data = moex.Ticker(ticker).candles(
             start=(datetime.now() - timedelta(days=1)),
@@ -152,6 +178,10 @@ def generate_stock_price_chart_ru(ticker, file_path):
 
 
 def get_stock_info_ru(ticker):
+    """
+    Возвращает строкой информацию о дневном изменении
+    по тикеру с Московской Биржи
+    """
     result = []
     data = moex.Ticker(ticker).candles(
         start=(datetime.now() - timedelta(days=1)),
